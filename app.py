@@ -5,6 +5,7 @@ import io
 import base64
 import textwrap
 import datetime
+from string import Template
 
 st.set_page_config(page_title="Sneha — Will you be my Valentine?", page_icon="💘", layout="centered")
 
@@ -36,40 +37,42 @@ def image_to_b64(img: Image.Image) -> str:
     b64 = base64.b64encode(buffered.getvalue()).decode()
     return "data:image/png;base64," + b64
 
-def make_animation_html(b64_a, b64_b, poem_title, poem_body, sender_name, recipient_name):
-    # Inline HTML + CSS + small confetti library via CDN (works in most deployments)
-    html = f"""
-<!doctype html>
+def make_animation_html(b64_a, b64_b, poem_body, sender_name, recipient_name):
+    """
+    Uses string.Template to avoid f-string brace escaping issues.
+    """
+    date_str = datetime.datetime.now().strftime("%B %d, %Y")
+    tpl = Template("""<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>For {recipient_name}</title>
+<title>For $recipient_name</title>
 <style>
-  html,body{{height:100%;margin:0;background:linear-gradient(180deg,#071024,#02101a);font-family:Georgia,serif;color:#fff;}}
-  .stage{{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:28px;box-sizing:border-box}}
-  .card{{width:min(900px,96%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}}
-  .headline{{font-size:28px;color:#ffd6e0;margin:0 0 6px 0}}
-  .poem{{color:#e6f3ff;opacity:0.95;line-height:1.45;margin-bottom:18px;font-size:16px}}
-  .portrait-row{{display:flex;gap:20px;align-items:center;justify-content:center}}
-  .portrait{{width:150px;height:150px;border-radius:50%;overflow:hidden;border:6px solid rgba(255,255,255,0.04);box-shadow:0 12px 30px rgba(0,0,0,0.6);transform-origin:center;}}
-  .portrait img{{width:100%;height:100%;object-fit:cover;display:block}}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071024,#02101a);font-family:Georgia,serif;color:#fff;}
+  .stage{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:28px;box-sizing:border-box}
+  .card{width:min(900px,96%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .headline{font-size:28px;color:#ffd6e0;margin:0 0 6px 0}
+  .poem{color:#e6f3ff;opacity:0.95;line-height:1.45;margin-bottom:18px;font-size:16px}
+  .portrait-row{display:flex;gap:20px;align-items:center;justify-content:center}
+  .portrait{width:150px;height:150px;border-radius:50%;overflow:hidden;border:6px solid rgba(255,255,255,0.04);box-shadow:0 12px 30px rgba(0,0,0,0.6);transform-origin:center;}
+  .portrait img{width:100%;height:100%;object-fit:cover;display:block}
   .merge{transform:translateX(0) scale(1);transition:transform 900ms cubic-bezier(.2,.9,.2,1);}
   .left{transform:translateX(-220px);}
   .right{transform:translateX(220px);}
   .centered-left{transform:translateX(-60px) scale(1.05); transition:transform 900ms cubic-bezier(.2,.9,.2,1);}
   .centered-right{transform:translateX(60px) scale(1.05); transition:transform 900ms cubic-bezier(.2,.9,.2,1);}
-  .heart{{position:absolute;left:50%;top:16%;transform:translateX(-50%);font-size:64px;opacity:0;transition:opacity 800ms ease, transform 900ms cubic-bezier(.2,.9,.2,1)}}
-  .heart.show{{opacity:1; transform:translateX(-50%) scale(1.06); filter: drop-shadow(0 12px 28px rgba(255,80,130,0.18));}}
-  .meta{{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:#cfe8ff;opacity:0.95;font-size:13px}}
+  .heart{position:absolute;left:50%;top:16%;transform:translateX(-50%);font-size:64px;opacity:0;transition:opacity 800ms ease, transform 900ms cubic-bezier(.2,.9,.2,1)}
+  .heart.show{opacity:1; transform:translateX(-50%) scale(1.06); filter: drop-shadow(0 12px 28px rgba(255,80,130,0.18));}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:#cfe8ff;opacity:0.95;font-size:13px}
   /* floating hearts */
   .floating{position:absolute;inset:0;pointer-events:none}
   .floating span{position:absolute;font-size:20px;opacity:0.12;animation:float 4s linear infinite}
-  @keyframes float{{0%{{transform:translateY(0) translateX(0) scale(0.9);opacity:0.12}}50%{{transform:translateY(-60px) translateX(10px) scale(1.05);opacity:0.28}}100%{{transform:translateY(0) translateX(-20px) scale(0.9);opacity:0.12}}}}
+  @keyframes float{0%{transform:translateY(0) translateX(0) scale(0.9);opacity:0.12}50%{transform:translateY(-60px) translateX(10px) scale(1.05);opacity:0.28}100%{transform:translateY(0) translateX(-20px) scale(0.9);opacity:0.12}}
   /* confetti canvas full-screen */
-  canvas.confetti{{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:9999}}
+  canvas.confetti{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:9999}
   @media (max-width:640px){
-    .portrait{{width:120px;height:120px}}
+    .portrait{width:120px;height:120px}
     .portrait-row{gap:12px}
   }
 </style>
@@ -77,17 +80,17 @@ def make_animation_html(b64_a, b64_b, poem_title, poem_body, sender_name, recipi
 <body>
 <div class="stage">
   <div class="card" id="card">
-    <div class="headline">For {recipient_name} — a tiny story</div>
-    <div class="poem">{poem_body}</div>
+    <div class="headline">For $recipient_name — a tiny story</div>
+    <div class="poem">$poem_body</div>
 
     <div class="portrait-row" id="portraits">
-      <div class="portrait left" id="p1"><img src="{b64_a}" alt="you"></div>
-      <div class="portrait right" id="p2"><img src="{b64_b}" alt="sneha"></div>
+      <div class="portrait left" id="p1"><img src="$b64_a" alt="you"></div>
+      <div class="portrait right" id="p2"><img src="$b64_b" alt="sneha"></div>
     </div>
 
     <div class="meta">
-      <div>Made by {sender_name}</div>
-      <div>{datetime.datetime.now().strftime("%B %d, %Y")}</div>
+      <div>Made by $sender_name</div>
+      <div>$date_str</div>
     </div>
 
     <div class="heart" id="bigHeart">💞</div>
@@ -109,26 +112,33 @@ def make_animation_html(b64_a, b64_b, poem_title, poem_body, sender_name, recipi
   const p2 = document.getElementById('p2');
   const heart = document.getElementById('bigHeart');
   const canvas = document.getElementById('c');
-  const confetti = window.confetti.create(canvas, {{ resize: true, useWorker: true }});
+  const confetti = window.confetti.create(canvas, { resize: true, useWorker: true });
 
-  function celebrate() {{
+  function celebrate() {
     // move portraits closer
     p1.classList.remove('left'); p2.classList.remove('right');
     p1.classList.add('centered-left'); p2.classList.add('centered-right');
     heart.classList.add('show');
 
     // confetti bursts
-    confetti({{ particleCount: 40, spread: 60, origin: {{ x:0.5, y:0.2 }} }});
-    setTimeout(() => confetti({{ particleCount: 80, spread: 120, origin: {{ x:0.5, y:0.1 }} }}), 400);
-    setTimeout(()=> confetti({{ particleCount: 120, spread: 160, origin: {{ x:0.5, y:0.0 }} }}), 800);
-  }}
+    confetti({ particleCount: 40, spread: 60, origin: { x:0.5, y:0.2 } });
+    setTimeout(() => confetti({ particleCount: 80, spread: 120, origin: { x:0.5, y:0.1 } }), 400);
+    setTimeout(()=> confetti({ particleCount: 120, spread: 160, origin: { x:0.5, y:0.0 } }), 800);
+  }
 
   // wait a beat then celebrate (animation triggered by streamlit when embedding)
   setTimeout(celebrate, 300);
 </script>
 </body>
-</html>
-"""
+</html>""")
+    html = tpl.substitute(
+        b64_a=b64_a,
+        b64_b=b64_b,
+        poem_body=poem_body,
+        sender_name=sender_name,
+        recipient_name=recipient_name,
+        date_str=date_str
+    )
     return html
 
 def make_downloadable_html_bytes(html_str: str) -> bytes:
@@ -220,7 +230,7 @@ with ask_cols[0]:
         b64a = image_to_b64(A)
         b64b = image_to_b64(B)
         poem = textwrap.fill(f"{line}\n\n— {sender}", width=60)
-        html = make_animation_html(b64a, b64b, "For you", poem, sender, recipient)
+        html = make_animation_html(b64a, b64b, poem, sender, recipient)
         # Show the animation as an embedded HTML
         st.components.v1.html(html, height=700, scrolling=True)
         # Provide downloadable html
