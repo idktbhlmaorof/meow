@@ -345,14 +345,3 @@ with col_skip:
         if st.session_state.stage_idx < len(stages)-1:
             st.session_state.stage_idx += 1
             st.rerun()
-
-# finale downloads
-if st.session_state.stage_idx == len(stages)-1:
-    st.markdown("---")
-    st.write("Final assets:")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.download_button("Download final HTML (stage)", data=html.encode("utf-8"), file_name=f"heart_heist_{recipient}.html", mime="text/html")
-    with c2:
-        st.download_button("Download .ics calendar file", data=ics_text.encode("utf-8"), file_name=f"valentine_{recipient}.ics", mime="text/calendar")
-    st.markdown("No photo uploads are enabled. Edit templates in `stages/` if you want to customize visuals.")
