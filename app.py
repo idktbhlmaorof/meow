@@ -306,7 +306,7 @@ poem_words_json = json.dumps(poem_words)
 compliments_json = json.dumps(compliments)
 AUDIO_URL = "https://cdn.simplecast.com/audio/6a2bbd/lofi-chill-beats.mp3"
 dtstart = datetime.datetime.combine(date_choice, datetime.time(hour=19, minute=0))
-ics_data_uri, ics_text = make_ics_data_uri(f"Valentine Date Night with {recipient}", f"Valentine Date Night with {recipient} — sent by {sender}.", dtstart)
+ics_data_uri, ics_text = make_ics_data_uri(f"Valentine!!(Or whatever it is😭) {recipient}", f"Valentine!!(Or whatever it is😭) with {recipient} — sent by {sender}.", dtstart)
 
 # load current stage
 curr_stage = stages[st.session_state.stage_idx]
