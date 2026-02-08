@@ -273,7 +273,6 @@ with col3:
 with col4:
     date_choice = st.date_input("Proposed date", value=datetime.date(datetime.datetime.now().year, 2, 14))
 st.markdown("---")
-st.markdown("Hand your phone to the recipient when you're ready. Do the actions in the frame, then click 'I've finished this stage — Continue' below.")
 
 stages = ["vault", "puzzle", "rain", "finale"]
 if "stage_idx" not in st.session_state:
@@ -285,7 +284,7 @@ with cola:
         st.session_state.stage_idx = 0
         st.rerun()
 with colb:
-    st.markdown(f"**Current stage:** {st.session_state.stage_idx+1} / {len(stages)} — **{stages[st.session_state.stage_idx].upper()}**")
+    st.markdown(f"**👉👈** {st.session_state.stage_idx+1} / {len(stages)} — **{stages[st.session_state.stage_idx].upper()}**")
 with colc:
     if st.button("Jump to finale"):
         st.session_state.stage_idx = len(stages)-1
