@@ -294,13 +294,13 @@ with colc:
 poem_line = "In a world of noise, you are my favourite melody."
 poem_words = poem_line.split()
 compliments = [
-    "Your laugh",
-    "The way you listen",
-    "Your kind heart",
-    "Your style",
-    "How you make time for people",
-    "Your curiosity",
-    "That grin at 2 AM"
+    "Your Maturity👉👈",
+    "Your Optimism",
+    "Your Affection!",
+    "Your Delulu😠",
+    "Everything😼",
+    "Marie Curie👉👈",
+    "Possessive😦"
 ]
 poem_words_json = json.dumps(poem_words)
 compliments_json = json.dumps(compliments)
