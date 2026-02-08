@@ -76,11 +76,16 @@ function cancelHold(){
 
 function onUnlock(){
   try{ new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=').play(); }catch(e){}
-  // flash the background quickly
+
   document.body.style.transition='background 450ms';
   document.body.style.background = 'linear-gradient(180deg,#ffd6e0,#fff0f4)';
-  setTimeout(()=>{ window.location.href = window.location.href.replace('vault','puzzle') || './puzzle.html'; }, 700);
+
+  log.textContent = "Vault unlocked. Continue the mission below.";
+  hint.textContent = "Unlocked ✔";
+
+  document.querySelector('.icon').textContent = '💗';
 }
+
 
 scanner.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startHold(); });
 scanner.addEventListener('pointerup', (e)=>{ cancelHold(); });
