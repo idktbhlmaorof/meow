@@ -1,0 +1,114 @@
+<!-- stages/finale.html -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finale — Will you be my Valentine?</title>
+<style>
+:root{--accent:{{ACCENT}};--bg:#071024}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#071024,#02101a);font-family:Inter,system-ui,Arial;color:#fff;display:flex;align-items:center;justify-content:center}
+.wrap{width:100%;max-width:900px;padding:18px;box-sizing:border-box;text-align:center}
+.envelope{width:420px;height:260px;border-radius:12px;background:linear-gradient(180deg,#ffdfe6,#ffd6e0);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+.card{position:absolute;top:100%;left:50%;transform:translate(-50%,0);width:360px;height:200px;background:white;border-radius:10px;padding:18px;color:#071024;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:top 500ms}
+.card.show{top:18%}
+.bigq{font-weight:800;margin-top:8px;color:var(--accent);display:none}
+.btns{display:flex;gap:14px;margin-top:12px}
+.yes{padding:12px 20px;border-radius:12px;background:linear-gradient(90deg,#ff6b8a,#ffb2c6);color:#071024;border:none;font-weight:800;cursor:pointer}
+.no{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+.ticket{position:fixed;bottom:-160px;left:50%;transform:translateX(-50%);width:560px;background:linear-gradient(90deg,#ffffff,#ffd6e0);border-radius:12px;padding:18px;color:#071024;box-shadow:0 40px 120px rgba(0,0,0,0.6);transition:bottom 700ms}
+.ticket.show{bottom:30px}
+.controls{margin-top:18px;color:#cfe8ff}
+@media(max-width:720px){ .envelope{width:320px;height:200px} .card{width:280px} .ticket{width:92%} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="envelope" id="envelope">
+    <div style="font-size:32px">💌</div>
+    <div style="position:absolute;bottom:8px;right:10px;color:#071024;font-size:12px">Tap to open</div>
+    <div class="card" id="cardInside">
+      <div style="font-family:'Brush Script MT',cursive;font-size:20px;color:#333">I have a very important question...</div>
+      <div class="bigq" id="bigq">Will you be my Valentine?</div>
+      <div class="btns" id="btns" style="display:none">
+        <button class="yes" id="yes">YES! Absolutely! ❤️</button>
+        <button class="no" id="no">No.</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">Tip: Tap the envelope, then click the big YES when it appears (No is playful).</div>
+</div>
+
+<div class="ticket" id="ticket">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-weight:900">ADMIT ONE</div>
+      <div style="font-size:20px;font-weight:800;margin-top:6px">Valentine Date Night</div>
+      <div style="margin-top:6px">With: <strong>{{RECIPIENT}}</strong></div>
+      <div style="margin-top:6px">When: <strong>{{DATE_HUMAN}}</strong></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px;color:#555">Dress code</div>
+      <div style="font-weight:700;margin-top:6px">Lookin' gorgeous as always</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:12px;justify-content:flex-end">
+    <a id="downloadIcs" href="{{ICS_URI}}" download="valentine_{{RECIPIENT}}.ics" style="padding:8px 12px;border-radius:8px;background:rgba(7,16,36,0.85);color:#fff;text-decoration:none">Save to Calendar</a>
+  </div>
+</div>
+
+<script>
+const envelope = document.getElementById('envelope');
+const card = document.getElementById('cardInside');
+const bigq = document.getElementById('bigq');
+const btns = document.getElementById('btns');
+const yes = document.getElementById('yes');
+const no = document.getElementById('no');
+const ticket = document.getElementById('ticket');
+
+envelope.addEventListener('click', ()=>{
+  card.classList.add('show');
+  setTimeout(()=>{ bigq.style.display='block'; setTimeout(()=>{ btns.style.display='flex'; }, 400) }, 430);
+});
+
+let dodge = 0, dodging=false;
+function dodgeNo(e){
+  if(dodging) return;
+  dodging=true; dodge++;
+  const env = envelope.getBoundingClientRect();
+  const x = Math.random()*(env.width-80) + env.left + window.scrollX;
+  const y = Math.random()*(env.height-40) + env.top + window.scrollY;
+  no.style.position='absolute';
+  no.style.left = (x - env.left) + 'px';
+  no.style.top = (y - env.top) + 'px';
+  setTimeout(()=>{ dodging=false; }, 220);
+  if(dodge >= 4){
+    no.textContent = 'YES!';
+    no.className = 'yes';
+    no.onclick = accept;
+  }
+}
+no.addEventListener('mouseenter', dodgeNo);
+no.addEventListener('touchstart', dodgeNo);
+
+function accept(){
+  // confetti
+  try{
+    confetti.create(document.createElement('canvas'), {resize:true})();
+  }catch(e){}
+  ticket.classList.add('show');
+}
+
+// simple confetti using canvas-confetti from CDN if present
+// try to dynamically load library
+(function loadConfetti(){
+  const s = document.createElement('script');
+  s.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js";
+  s.onload = ()=>{ /* library available if needed */ };
+  document.head.appendChild(s);
+})();
+
+yes.addEventListener('click', accept);
+</script>
+</body>
+</html>
