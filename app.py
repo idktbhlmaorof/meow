@@ -38,7 +38,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0210
 </head>
 <body>
   <div class="container" role="main">
-    <div class="spot"><div class="pad"><div class="icon">🔒</div><div style="font-size:13px;color:#fff;margin-top:6px">Access Restricted</div><div style="font-size:12px;color:#ffd6e0;margin-top:4px">Authorized Cuteness Only</div></div></div>
+    <div class="spot"><div class="pad"><div class="icon">🔒</div><div style="font-size:13px;color:#fff;margin-top:6px">Access Restricted</div><div style="font-size:12px;color:#ffd6e0;margin-top:4px">Authorized Sneha Only 😠</div></div></div>
     <div class="scanner" id="scanner" title="Press & hold to scan"><div class="fill" id="fill"></div><div class="hint" id="hint">Press & hold to scan</div></div>
     <div class="log" id="log"></div>
     <div class="helper">Hold on the scanner for a second — it's a secret handshake.</div>
