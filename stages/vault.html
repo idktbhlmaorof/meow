@@ -1,0 +1,94 @@
+<!-- stages/vault.html -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vault — The Heart Heist</title>
+<style>
+:root { --accent: {{ACCENT}}; --bg:#071024; }
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02101a);font-family:Inter,system-ui,Arial;color:#fff;display:flex;align-items:center;justify-content:center}
+.container{width:100%;max-width:960px;padding:28px;box-sizing:border-box;text-align:center}
+.spot{width:320px;height:320px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 40% 30%, rgba(255,182,193,0.22), rgba(255,182,193,0.06));display:flex;align-items:center;justify-content:center;box-shadow:0 30px 80px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.02)}
+.pad{width:160px;height:160px;border-radius:18px;background:linear-gradient(180deg,rgba(255,240,245,0.06),rgba(255,240,245,0.02));display:flex;align-items:center;justify-content:center;flex-direction:column}
+.icon{font-size:56px;color:var(--accent)}
+.title{margin-top:12px;font-weight:700;color:#ffd6e0}
+.scanner{margin:18px auto 6px;width:260px;height:44px;border-radius:999px;background:rgba(255,255,255,0.02);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+.fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--accent),#ffd6e0);height:100%;transition:width 0.06s linear}
+.hint{position:relative;z-index:2;padding:10px;color:#fff;font-weight:700}
+.log{height:44px;color:#dbeffd;margin-top:8px;min-height:40px}
+.helper{margin-top:10px;color:#cfe8ff;opacity:0.9}
+.footer-note{margin-top:20px;color:#9fbfff;opacity:0.85;font-size:13px}
+</style>
+</head>
+<body>
+  <div class="container" role="main">
+    <div class="spot" aria-hidden="true">
+      <div class="pad">
+        <div class="icon">🔒</div>
+        <div style="font-size:13px;color:#fff;margin-top:6px">Access Restricted</div>
+        <div style="font-size:12px;color:#ffd6e0;margin-top:4px">Authorized Cuteness Only</div>
+      </div>
+    </div>
+
+    <div class="scanner" id="scanner" aria-label="press and hold to scan">
+      <div class="fill" id="fill"></div>
+      <div class="hint" id="hint">Press & hold to scan</div>
+    </div>
+
+    <div class="log" id="log"></div>
+    <div class="helper">Hold on the scanner for a second — it's a secret handshake.</div>
+    <div class="footer-note">If nothing happens, try a longer press (touch-friendly).</div>
+  </div>
+
+<script>
+const scanner = document.getElementById('scanner');
+const fill = document.getElementById('fill');
+const hint = document.getElementById('hint');
+const log = document.getElementById('log');
+
+let holding=false, progress=0, timer=null;
+
+function startHold(){
+  if(holding) return;
+  holding=true; progress=0; fill.style.width='0%'; log.textContent='Analyzing smile...';
+  timer = setInterval(()=>{
+    if(!holding) return;
+    progress = Math.min(100, progress + 3);
+    fill.style.width = progress + '%';
+    if(progress === 30) log.textContent = 'Analyzing vibes... Immaculate.';
+    if(progress === 60) log.textContent = 'Analyzing smile... 100% Contagious.';
+    if(progress === 92) log.textContent = 'Match found: The girl of my dreams.';
+    if(progress >= 100){
+      clearInterval(timer);
+      holding=false;
+      onUnlock();
+    }
+  }, 50);
+}
+
+function cancelHold(){
+  holding=false;
+  clearInterval(timer);
+  fill.style.width='0%';
+  log.textContent='';
+}
+
+function onUnlock(){
+  try{ new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=').play(); }catch(e){}
+  // flash the background quickly
+  document.body.style.transition='background 450ms';
+  document.body.style.background = 'linear-gradient(180deg,#ffd6e0,#fff0f4)';
+  setTimeout(()=>{ window.location.href = window.location.href.replace('vault','puzzle') || './puzzle.html'; }, 700);
+}
+
+scanner.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startHold(); });
+scanner.addEventListener('pointerup', (e)=>{ cancelHold(); });
+scanner.addEventListener('pointerleave', (e)=>{ cancelHold(); });
+
+// touch compatibility: pointer events already handle touch, but add fallback
+scanner.addEventListener('touchstart', (e)=>{ startHold(); }, {passive:true});
+scanner.addEventListener('touchend', (e)=>{ cancelHold(); }, {passive:true});
+</script>
+</body>
+</html>
