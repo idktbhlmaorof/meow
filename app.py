@@ -263,7 +263,15 @@ def make_ics_data_uri(title, description, dtstart, duration_minutes=120, locatio
 # UI Inputs & Stage Flow
 # -----------------------
 st.title("Meow")
-
+col1, col2, col3, col4 = st.columns([1,1,1,1])
+with col1:
+    sender = st.text_input("Sender name", value="Parth")
+with col2:
+    recipient = st.text_input("Recipient name", value="Sneha")
+with col3:
+    accent = st.color_picker("Accent color", value="#ff6b8a")
+with col4:
+    date_choice = st.date_input("Proposed date", value=datetime.date(datetime.datetime.now().year, 2, 14))
 st.markdown("---")
 st.markdown("Hand your phone to the recipient when you're ready. Do the actions in the frame, then click 'I've finished this stage — Continue' below.")
 
