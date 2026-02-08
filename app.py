@@ -294,7 +294,7 @@ with colc:
 poem_line = "In a world of noise, you are my favourite melody."
 poem_words = poem_line.split()
 compliments = [
-    "Your Maturity👉👈",
+    "Your Maturity..",
     "Your Optimism",
     "Your Affection!",
     "Your Delulu😠",
