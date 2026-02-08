@@ -219,7 +219,7 @@ created_files = ensure_stage_files()
 if created_files:
     st.info(f"Created missing stage templates: {', '.join(created_files)} (you can edit them in `stages/`).")
 else:
-    st.write("All stage templates present in `stages/`.")
+    st.write("Meow")
 
 # -----------------------
 # Helpers used by app
