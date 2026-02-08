@@ -179,7 +179,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#071024,#02101a
   </div>
 </div>
 <div class="ticket" id="ticket"><div style="display:flex;justify-content:space-between;align-items:center">
-  <div><div style="font-weight:900">ADMIT ONE</div><div style="font-size:20px;font-weight:800;margin-top:6px">Valentine Date Night</div><div style="margin-top:6px">With: <strong>{{RECIPIENT}}</strong></div><div style="margin-top:6px">When: <strong>{{DATE_HUMAN}}</strong></div></div>
+  <div><div style="font-weight:900">ADMIT ONE</div><div style="font-size:20px;font-weight:800;margin-top:6px">Valentine!!(Or whatever it is😭)</div><div style="margin-top:6px">With: <strong>{{RECIPIENT}}</strong></div><div style="margin-top:6px">When: <strong>{Whenever you want👉👈}</strong></div></div>
   <div style="text-align:right"><div style="font-size:12px;color:#555">Dress code</div><div style="font-weight:700;margin-top:6px">Lookin' gorgeous as always</div></div>
 </div><div style="margin-top:12px;display:flex;gap:12px;justify-content:flex-end"><a id="downloadIcs" href="{{ICS_URI}}" download="valentine_{{RECIPIENT}}.ics" style="padding:8px 12px;border-radius:8px;background:rgba(7,16,36,0.85);color:#fff;text-decoration:none">Save to Calendar</a></div></div>
 
