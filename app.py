@@ -262,7 +262,7 @@ def make_ics_data_uri(title, description, dtstart, duration_minutes=120, locatio
 # -----------------------
 # UI Inputs & Stage Flow
 # -----------------------
-st.title("The Heart Heist — prepare the mission")
+st.title("Meow")
 col1, col2, col3, col4 = st.columns([1,1,1,1])
 with col1:
     sender = st.text_input("Sender name", value="Parth")
