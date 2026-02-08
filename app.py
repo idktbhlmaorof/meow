@@ -145,6 +145,7 @@ st.components.v1.html(html, height=720, scrolling=True)
 # After the user completes the interactive experience in the frame they click the big done button
 st.markdown("---")
 col_done, col_skip = st.columns([2,1])
+
 with col_done:
     if st.button("I've finished this stage — Continue"):
         if st.session_state.stage_idx < len(stages)-1:
@@ -157,6 +158,7 @@ with col_skip:
         if st.session_state.stage_idx < len(stages)-1:
             st.session_state.stage_idx += 1
             st.rerun()
+
 
 # At the end show downloads & notes
 if st.session_state.stage_idx == len(stages)-1:
