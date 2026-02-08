@@ -149,14 +149,14 @@ with col_done:
     if st.button("I've finished this stage — Continue"):
         if st.session_state.stage_idx < len(stages)-1:
             st.session_state.stage_idx += 1
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.success("Mission complete — you reached the finale.")
 with col_skip:
     if st.button("Skip this stage"):
         if st.session_state.stage_idx < len(stages)-1:
             st.session_state.stage_idx += 1
-            st.experimental_rerun()
+            st.rerun()
 
 # At the end show downloads & notes
 if st.session_state.stage_idx == len(stages)-1:
