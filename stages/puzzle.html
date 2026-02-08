@@ -1,0 +1,113 @@
+<!-- stages/puzzle.html -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poetry Puzzle</title>
+<style>
+:root{--accent:{{ACCENT}};--bg:#071024}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#051022);font-family:Inter,system-ui,Arial;color:#fff;display:flex;align-items:center;justify-content:center}
+.wrap{width:100%;max-width:1000px;padding:22px;box-sizing:border-box}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.h1{font-weight:800;color:#ffd6e0}
+.instructions{color:#cfe8ff}
+.content{display:flex;gap:18px;align-items:flex-start}
+.words{flex:1;display:flex;gap:10px;flex-wrap:wrap}
+.word{padding:8px 12px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid rgba(255,255,255,0.03);cursor:grab}
+.notepad{width:320px;min-height:120px;border:2px dashed rgba(255,255,255,0.03);border-radius:10px;padding:12px;background:rgba(0,0,0,0.06)}
+.continue{margin-top:12px;text-align:right}
+.continue button{padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,var(--accent),#ffd6e0);border:none;color:#071024;font-weight:800}
+.good{box-shadow:0 0 30px rgba(255,200,215,0.35)}
+.note{color:#cfe8ff;margin-top:10px}
+@media(max-width:720px){ .content{flex-direction:column} .notepad{width:100%} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" role="main">
+    <div class="header">
+      <div class="h1">Poetry Puzzle</div>
+      <div class="instructions">Drag or tap the words into the notepad to form the line</div>
+    </div>
+    <div class="content">
+      <div class="words" id="wordsArea"></div>
+      <div style="width:340px">
+        <div class="notepad" id="notepad" ondragover="event.preventDefault()"></div>
+        <div class="continue"><button id="continueBtn" disabled>Continue</button></div>
+      </div>
+    </div>
+    <div class="note">Hint: Words are in correct reading order when the poem is solved.</div>
+  </div>
+</div>
+
+<script>
+const WORDS = {{POEM_WORDS_JSON}}; // injected
+const wordsArea = document.getElementById('wordsArea');
+const notepad = document.getElementById('notepad');
+const continueBtn = document.getElementById('continueBtn');
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a }
+let shuffled = shuffle([...WORDS]);
+
+function render(){
+  wordsArea.innerHTML = '';
+  shuffled.forEach(w=>{
+    const el = document.createElement('div');
+    el.className='word';
+    el.textContent = w;
+    el.draggable = true;
+    el.addEventListener('dragstart',(e)=>{ e.dataTransfer.setData('text/plain', w); el.classList.add('dragging')});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    el.addEventListener('click', ()=> placeToken(w, el));
+    wordsArea.appendChild(el);
+  })
+}
+
+function placeToken(word, sourceEl){
+  const token = document.createElement('div');
+  token.className='word';
+  token.textContent = word;
+  token.draggable = true;
+  token.addEventListener('dragstart',(e)=> e.dataTransfer.setData('text/plain', word));
+  try{ sourceEl.remove(); }catch(e){}
+  notepad.appendChild(token);
+  checkSolved();
+}
+notepad.addEventListener('dragover', e=> e.preventDefault());
+notepad.addEventListener('drop', e=>{
+  e.preventDefault();
+  const w = e.dataTransfer.getData('text/plain');
+  if(!w) return;
+  const children = Array.from(wordsArea.children);
+  const found = children.find(c=>c.textContent === w);
+  if(found) found.remove();
+  const token = document.createElement('div');
+  token.className='word';
+  token.textContent = w;
+  token.draggable = true;
+  token.addEventListener('dragstart',(e)=> e.dataTransfer.setData('text/plain', w));
+  notepad.appendChild(token);
+  checkSolved();
+});
+
+function checkSolved(){
+  const placed = Array.from(notepad.children).map(x=>x.textContent.trim());
+  const target = WORDS.map(s=>s.trim());
+  if(placed.length !== target.length){ continueBtn.disabled = true; notepad.classList.remove('good'); return; }
+  let ok = true;
+  for(let i=0;i<target.length;i++){ if(target[i] !== placed[i]){ ok=false; break } }
+  if(ok){ notepad.classList.add('good'); continueBtn.disabled = false; } else { notepad.classList.remove('good'); continueBtn.disabled = true; }
+}
+
+continueBtn.addEventListener('click', ()=> {
+  // show a small glow and a hint that user should press "I've finished this stage" in the parent page
+  continueBtn.textContent = "Good — now press Continue in the main page";
+  continueBtn.disabled = true;
+});
+
+// initial render
+render();
+</script>
+</body>
+</html>
