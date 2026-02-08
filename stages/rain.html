@@ -1,0 +1,110 @@
+<!-- stages/rain.html -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compliment Rain</title>
+<style>
+:root{--accent:{{ACCENT}};--bg:#071024}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#0d1a2b,#071024);font-family:Inter,system-ui,Arial;color:#fff;overflow:hidden}
+.container{width:100%;height:100vh;display:flex;align-items:center;justify-content:center}
+.stage{width:95vw;height:85vh;background:linear-gradient(180deg,#fff3fb06,transparent);border-radius:14px;padding:10px;position:relative;overflow:hidden}
+.reason-list{position:absolute;top:12px;left:12px;background:rgba(7,16,36,0.6);padding:10px;border-radius:8px;max-width:260px}
+.reason-list div{padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:6px}
+.character{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:120px;text-align:center;z-index:30}
+.character img{width:120px;height:120px;border-radius:999px;border:6px solid rgba(255,255,255,0.04)}
+.fall-item{position:absolute;font-size:26px;pointer-events:none}
+.hint{position:absolute;right:12px;top:12px;color:#cfe8ff}
+@media(max-width:720px){ .stage{height:78vh} .reason-list{display:none} .character img{width:96px;height:96px} }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="stage" id="stage">
+    <div class="reason-list" id="reasons"><strong>Reasons I like you</strong></div>
+    <div class="hint">Catch 5 stars to proceed</div>
+    <div class="character" id="character">
+      <img src="https://via.placeholder.com/300x300.png?text=Me" alt="character">
+      <div style="font-size:12px;margin-top:6px;color:#fff">Move me to catch stars</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const compliments = {{COMPLIMENTS_JSON}}; // injected
+const stage = document.getElementById('stage');
+const character = document.getElementById('character');
+const reasons = document.getElementById('reasons');
+let caught = 0;
+const required = 5;
+let active = true;
+let pool = [];
+
+function spawn(){
+  if(!active) return;
+  const types = ['💖','🌟','🌸','✨'];
+  const t = types[Math.floor(Math.random()*types.length)];
+  const el = document.createElement('div');
+  el.className = 'fall-item';
+  el.textContent = t;
+  el.style.left = (5 + Math.random()*85) + '%';
+  el.style.top = '-6%';
+  stage.appendChild(el);
+  pool.push(el);
+  const duration = 3500 + Math.random()*2500;
+  const start = performance.now();
+  function frame(now){
+    const p = (now - start) / duration;
+    if(p >= 1){ try{ el.remove() }catch(e){} pool = pool.filter(x=>x!==el); return; }
+    el.style.top = (p*100) + '%';
+    // collision
+    const ri = el.getBoundingClientRect();
+    const rc = character.getBoundingClientRect();
+    if((ri.left + ri.width/2) > rc.left && (ri.left + ri.width/2) < (rc.left + rc.width) &&
+       (ri.top + ri.height/2) > rc.top && (ri.top + ri.height/2) < (rc.top + rc.height)){
+      catchItem(el.textContent);
+      try{ el.remove() }catch(e){} pool = pool.filter(x=>x!==el); return;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  setTimeout(spawn, 600 + Math.random()*600);
+}
+
+function catchItem(symbol){
+  if(symbol === '🌟'){
+    const node = document.createElement('div');
+    node.textContent = `Caught Star #${caught+1}: ${compliments[Math.min(caught,compliments.length-1)]}`;
+    reasons.appendChild(node);
+    caught += 1;
+    if(caught >= required){
+      active = false;
+      pool.forEach(x=>{ try{x.remove()}catch(e){} });
+      // hint to user to press continue in main page
+      const hint = document.createElement('div'); hint.textContent = "Great! Press Continue in the main page.";
+      hint.style.marginTop = '8px'; hint.style.color = '#ffd6e0';
+      reasons.appendChild(hint);
+    }
+  } else {
+    const node = document.createElement('div'); node.textContent = symbol;
+    reasons.appendChild(node);
+    if(reasons.children.length > 8) reasons.removeChild(reasons.children[1]);
+  }
+}
+
+// pointer movement to move character
+function moveChar(x){
+  const rect = stage.getBoundingClientRect();
+  const cx = Math.max(rect.left + 20, Math.min(x, rect.right - 20));
+  const pct = (cx - rect.left) / rect.width;
+  character.style.left = (pct*100) + '%';
+  character.style.transform = 'translateX(-50%)';
+}
+
+document.addEventListener('pointermove', (e)=> moveChar(e.clientX));
+document.addEventListener('touchmove', (e)=> { if(e.touches && e.touches[0]) moveChar(e.touches[0].clientX); }, {passive:true});
+
+spawn();
+</script>
+</body>
+</html>
